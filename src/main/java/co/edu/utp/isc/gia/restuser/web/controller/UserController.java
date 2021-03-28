@@ -30,7 +30,7 @@ public class UserController {
     }
     
     @GetMapping
-    public List<UserDto> listAll() {
+    public List<UserDto> listAll() throws UserNotFoundException {
         return userService.listAll();
     }
     
