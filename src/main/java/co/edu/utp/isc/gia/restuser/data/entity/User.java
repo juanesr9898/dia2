@@ -19,8 +19,7 @@ import lombok.Setter;
 @Getter
 @Entity
 @Data
-@Table("Usuario")
-@SuppressWarnings("PersistenceUnitPresent")
+@Table(name = "Usuario")
 public class User implements Serializable{
     
     @Id
