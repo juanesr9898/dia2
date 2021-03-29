@@ -2,6 +2,10 @@ package co.edu.utp.isc.gia.restuser.service;
 
 import co.edu.utp.isc.gia.restuser.data.entity.User;
 import co.edu.utp.isc.gia.restuser.data.repository.UserRepository;
+import co.edu.utp.isc.gia.restuser.exceptios.IdNotFoundException;
+import co.edu.utp.isc.gia.restuser.exceptios.InvalidEmailException;
+import co.edu.utp.isc.gia.restuser.exceptios.InvalidNameException;
+import co.edu.utp.isc.gia.restuser.exceptios.InvalidPasswordException;
 import co.edu.utp.isc.gia.restuser.web.dto.UserDto;
 import co.edu.utp.isc.gia.restuser.exceptios.UserNotFoundException;
 import java.util.ArrayList;
@@ -20,13 +24,37 @@ public class UserService {
         this.modelMapper = modelMapper;
     }
 
-    public UserDto save(UserDto user) {       
+    public UserDto save(UserDto user) 
+            throws UserNotFoundException, IdNotFoundException, 
+            InvalidNameException, InvalidEmailException, 
+            InvalidPasswordException {  
+        //Validar información 
+        
+        if(user == null){
+            throw new UserNotFoundException("Invalid User Data");
+        }else if(user.getUsername() == null || user.getUsername().isEmpty()){
+            throw new UserNotFoundException("Invalid Username");
+        }else if(user.getEmail() == null || user.getEmail().isEmpty()){
+            throw new InvalidEmailException();
+        }else if(user.getId() == null || user.getId().toString().isEmpty()){
+            throw new IdNotFoundException();
+        }else if(user.getName() == null || user.getName().isEmpty()){
+            throw new InvalidNameException();
+        }else if(user.getPassword() == null || user.getPassword().isEmpty()){
+            throw new InvalidPasswordException();
+        }else if(user.getPassword().length() < 5){
+            throw new InvalidPasswordException(user.getPassword().length());
+        }
+        
         //modelMapper.map permite mapear propiedades de un tipo de objeto 
         //a otro tipo de objeto permitiendo copiar también los datos 
         //de las referencias a los objetos que contengan.
+        //Procesamos la información
+        
         User myUser = modelMapper.map(user, User.class);
-        UserDto resp = modelMapper.map(myUser, UserDto.class);
-        myUser = userRepository.save(myUser);        
+        myUser.setUsername(myUser.getUsername().toLowerCase());
+        myUser = userRepository.save(myUser);         
+        UserDto resp = modelMapper.map(myUser, UserDto.class);       
         return resp;
     }
     
@@ -34,51 +62,70 @@ public class UserService {
         //Llamo la función findaAll de userRepository 
         //Y el llamado que hago lo convierto en una lista de tipo User
         List<User> users = (List<User>) userRepository.findAll();
-        if (users == null || users.isEmpty()){
-            throw new UserNotFoundException();
-        }
-        else{
-            List<UserDto> userDto;
-            userDto = new ArrayList<>();
-            users.forEach((user) -> {
-                //Creamos un user que recorre users
-                userDto.add(modelMapper.map(user, UserDto.class));
-            });
-            return userDto;
-        }       
+        List<UserDto> userDto = null;
+            if (users == null || users.isEmpty()){
+                throw new UserNotFoundException("No Existing Users Yet");
+            }else{
+                users.forEach((user) -> {userDto.add(modelMapper.map(user, UserDto.class));});
+                //Creamos un user que recorre users                
+                return userDto;
+           }       
     }
     
-    public UserDto findOne(Long id) throws UserNotFoundException {        
+    public UserDto findOne(Long id) throws IdNotFoundException, UserNotFoundException {        
         Optional<User> user = userRepository.findById(id); //Llamo la función findaAll de userRepository 
-        if (user.isPresent()) {            
-            return modelMapper.map(user.get(), UserDto.class);
-        }else{
-            throw new UserNotFoundException(id);
-        }                   
+        
+        if(id == null || id.toString().isEmpty()){
+            throw new IdNotFoundException();
+        }
+        else if (!user.isPresent()){
+            throw new IdNotFoundException(id);
+        }
+        else if (user == null){
+            throw new UserNotFoundException("Invalid User Data");
+        }
+        return modelMapper.map(user.get(), UserDto.class);
     }
     
-    public UserDto updateOne(Long id, UserDto user) throws UserNotFoundException {
+    public UserDto updateOne(Long id, UserDto user) 
+            throws IdNotFoundException, UserNotFoundException {
         List<UserDto> users = listAll(); //Creo users para tenerlos en una lista
         boolean searchID = searchById(id, users);  // Y aquí busco su id, a ver si existe
-        if (searchID != false) {
-            throw new UserNotFoundException(id);
-        }else{
-            user.setId(id);
-            userRepository.save(modelMapper.map(user, User.class));    
-            return findOne(id);
+        
+        if(id == null || id.toString().isEmpty()){
+            throw new IdNotFoundException();
         }
+        else if(user == null){
+            throw new UserNotFoundException("Invalid User Data");
+        }
+        else if (searchID != false) {
+            throw new IdNotFoundException(id);
+        }
+        user.setId(id);
+        userRepository.save(modelMapper.map(user, User.class));    
+        return findOne(id);
     }
     
-    public UserDto removeOne(Long id) throws UserNotFoundException {
+    public UserDto removeOne(Long id) 
+            throws IdNotFoundException, UserNotFoundException {
+        
+        if(id == null || id.toString().isEmpty()){
+            throw new  IdNotFoundException(id);
+        }    
+        
         Optional<User> user = userRepository.findById(id);
-        UserDto userDto = new UserDto();
-        if (user.isPresent()) {
-            userDto = modelMapper.map(user.get(), UserDto.class);
-            userRepository.deleteById(id);
-            return userDto;
-        }else{
-            throw new UserNotFoundException(id);
+        
+        if (!user.isPresent()) {
+            throw new IdNotFoundException(id);
         }
+        if(user == null){
+            throw new UserNotFoundException("Invalid User Data");
+        }
+        
+        UserDto userDto = new UserDto();
+        userDto = modelMapper.map(user.get(), UserDto.class);
+        userRepository.deleteById(id);
+        return userDto;        
     }
     
     private boolean searchById (Long id, List<UserDto> users) {
