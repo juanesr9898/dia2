@@ -65,7 +65,7 @@ public class UserController {
     }
     
     @DeleteMapping("/{id}")
-    public UserDto removeOne(@PathVariable Long id) throws IdNotFoundException {
+    public UserDto removeOne(@PathVariable Long id) throws IdNotFoundException, UserNotFoundException {
         return userService.removeOne(id);
     }
 }
