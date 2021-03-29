@@ -15,8 +15,9 @@ public class UserService {
     private UserRepository userRepository;     
     private ModelMapper modelMapper = new ModelMapper();
     
-    public UserService(UserRepository userRepository) {
+    public UserService(UserRepository userRepository, ModelMapper modelMapper) {
         this.userRepository = userRepository;
+        this.modelMapper = modelMapper;
     }
 
     public UserDto save(UserDto user) {       
