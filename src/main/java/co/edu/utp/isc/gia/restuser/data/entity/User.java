@@ -1,7 +1,6 @@
 package co.edu.utp.isc.gia.restuser.data.entity;
 
 import java.io.Serializable;
-import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
@@ -21,7 +20,6 @@ import lombok.ToString;
 @Getter
 @Entity
 @Data
-@ToString
 @Table(name = "Usuario")
 public class User implements Serializable{    
     @Id

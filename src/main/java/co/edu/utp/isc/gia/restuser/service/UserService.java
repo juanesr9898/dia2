@@ -61,26 +61,36 @@ public class UserService {
     public List<UserDto> listAll() throws UserNotFoundException {
         //Llamo la función findaAll de userRepository 
         //Y el llamado que hago lo convierto en una lista de tipo User
+        if (userRepository.findAll() == null){
+            throw new UserNotFoundException("No Existing Users Yet");
+        }
+        
         List<User> users = (List<User>) userRepository.findAll();
-        List<UserDto> userDto = null;
-            if (users == null || users.isEmpty()){
-                throw new UserNotFoundException("No Existing Users Yet");
-            }else{
-                users.forEach((user) -> {userDto.add(modelMapper.map(user, UserDto.class));});
-                //Creamos un user que recorre users                
-                return userDto;
-           }       
+        List<UserDto> userDto = new ArrayList<UserDto>();
+        
+        if (users == null || users.isEmpty()){
+            throw new UserNotFoundException("No Existing Users Yet");
+        }else{
+            users.forEach((user) -> {userDto.add(modelMapper.map(user, UserDto.class));});
+        }  //Creamos un user que recorre users   
+        
+        if(userDto == null || userDto.isEmpty()){
+            throw new UserNotFoundException("No Existing Users Yet");
+        }
+        return userDto;
     }
     
-    public UserDto findOne(Long id) throws IdNotFoundException, UserNotFoundException {        
+    public UserDto findOne(Long id) throws IdNotFoundException, UserNotFoundException {     
+        if (!userRepository.existsById(id)){
+            throw new IdNotFoundException(id);
+        }
+        
         Optional<User> user = userRepository.findById(id); //Llamo la función findaAll de userRepository 
         
         if(id == null || id.toString().isEmpty()){
             throw new IdNotFoundException();
         }
-        else if (!user.isPresent()){
-            throw new IdNotFoundException(id);
-        }
+        
         else if (user == null){
             throw new UserNotFoundException("Invalid User Data");
         }
@@ -89,8 +99,6 @@ public class UserService {
     
     public UserDto updateOne(Long id, UserDto user) 
             throws IdNotFoundException, UserNotFoundException {
-        List<UserDto> users = listAll(); //Creo users para tenerlos en una lista
-        boolean searchID = searchById(id, users);  // Y aquí busco su id, a ver si existe
         
         if(id == null || id.toString().isEmpty()){
             throw new IdNotFoundException();
@@ -98,7 +106,7 @@ public class UserService {
         else if(user == null){
             throw new UserNotFoundException("Invalid User Data");
         }
-        else if (searchID != false) {
+        else if (!userRepository.existsById(id)) {
             throw new IdNotFoundException(id);
         }
         user.setId(id);
@@ -109,15 +117,13 @@ public class UserService {
     public UserDto removeOne(Long id) 
             throws IdNotFoundException, UserNotFoundException {
         
-        if(id == null || id.toString().isEmpty()){
+        if(id == null || id.toString().isEmpty()
+                || !userRepository.existsById(id)){
             throw new  IdNotFoundException(id);
-        }    
+        }   
         
         Optional<User> user = userRepository.findById(id);
-        
-        if (!user.isPresent()) {
-            throw new IdNotFoundException(id);
-        }
+ 
         if(user == null){
             throw new UserNotFoundException("Invalid User Data");
         }
@@ -126,13 +132,5 @@ public class UserService {
         userDto = modelMapper.map(user.get(), UserDto.class);
         userRepository.deleteById(id);
         return userDto;        
-    }
-    
-    private boolean searchById (Long id, List<UserDto> users) {
-        for (int i=0; i<users.size(); i++) {
-            if (id.equals(users.get(i).getId())) 
-                return true;               
-        }
-        return false;
     }
 }

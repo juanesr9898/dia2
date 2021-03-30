@@ -34,22 +34,8 @@ public class UserController {
             InvalidPasswordException, InvalidPasswordException{
         return userService.save(user); 
     }
-    
-//    @PostMapping
-//    public UserDto insert (@RequestBody UserDto user) throws UserNotFoundException{
-//        if(user == null){
-//            throw new UserNotFoundException("Invalid User Data");
-//        }
-//        UserDto resp;
-//        try{
-//            resp = userService.save(user);
-//        } catch (UserNotFoundException ex){
-//            throw new UserNotFoundException(ex.getMessage());
-//        }      
-//        return resp;
-//    }
-    
-    @GetMapping
+        
+    @GetMapping()
     public List<UserDto> listAll() throws UserNotFoundException {
         return userService.listAll();
     }

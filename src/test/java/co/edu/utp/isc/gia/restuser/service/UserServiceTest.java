@@ -46,7 +46,7 @@ public class UserServiceTest {
         User resulted = new User(1L, "juanesr9898", "123456", "Juanes", "juanes.9898@hotmail.com");
         when(userRepository.save(any(User.class))).thenReturn(resulted);
         
-        UserDto user = new UserDto(1L, "JUANESR9898", "123", "Juanes", "juanes.9898@hotmail.com");
+        UserDto user = new UserDto(1L, "JUANESR9898", "123456", "Juanes", "juanes.9898@hotmail.com");
         UserService instance = new UserService(userRepository, modelMapper);
         UserDto result = instance.save(user);        
         
@@ -58,49 +58,48 @@ public class UserServiceTest {
         assertEquals(expResult.getId(), result.getId());
         
     }
-
-    @Test
-    public void testListAll() throws UserNotFoundException {
-        System.out.println("listAll");
-        UserService instance = new UserService(userRepository, modelMapper);
-        List<UserDto> expResult = null;
-        List<UserDto> result = instance.listAll();
-        assertEquals(expResult, result);
-        fail("The test case is a prototype.");
-    }
-
-    @Test
-    public void testFindOne() throws IdNotFoundException, UserNotFoundException {
-        System.out.println("findOne");
-        Long id = null;
-        UserService instance = new UserService(userRepository, modelMapper);
-        UserDto expResult = null;
-        UserDto result = instance.findOne(id);
-        assertEquals(expResult.getId(), result.getId());
-        fail("The test case is a prototype.");
-    }
-
-    @Test
-    public void testUpdateOne() throws UserNotFoundException, IdNotFoundException {
-        System.out.println("updateOne");
-        Long id = null;
-        UserDto user = null;
-        UserService instance = new UserService(userRepository, modelMapper);
-        UserDto expResult = null;
-        UserDto result = instance.updateOne(id, user);
-        assertEquals(expResult, result);
-        fail("The test case is a prototype.");
-    }
-
-    @Test
-    public void testRemoveOne() throws UserNotFoundException, IdNotFoundException {
-        System.out.println("removeOne");
-        Long id = 1L;
-        UserService instance = new UserService(userRepository, modelMapper);
-        UserDto expResult = new UserDto(1L, "juanesr9898", "123456", "Juanes", "juanes.9898@hotmail.com"); ;
-        UserDto result = instance.removeOne(id);
-        assertEquals(expResult, result);
-        fail("The test case is a prototype.");
-    }   
-
+//
+//    @Test
+//    public void testListAll() throws UserNotFoundException {
+//        System.out.println("listAll");
+//        UserService instance = new UserService(userRepository, modelMapper);
+//        List<UserDto> expResult = null;
+//        List<UserDto> result = instance.listAll();
+//        assertEquals(expResult, result);
+//        fail("The test case is a prototype.");
+//    }
+//
+//    @Test
+//    public void testFindOne() throws IdNotFoundException, UserNotFoundException {
+//        System.out.println("findOne");
+//        Long id = null;
+//        UserService instance = new UserService(userRepository, modelMapper);
+//        UserDto expResult = null;
+//        UserDto result = instance.findOne(id);
+//        assertEquals(expResult.getId(), result.getId());
+//        fail("The test case is a prototype.");
+//    }
+//
+//    @Test
+//    public void testUpdateOne() throws UserNotFoundException, IdNotFoundException {
+//        System.out.println("updateOne");
+//        Long id = null;
+//        UserDto user = null;
+//        UserService instance = new UserService(userRepository, modelMapper);
+//        UserDto expResult = null;
+//        UserDto result = instance.updateOne(id, user);
+//        assertEquals(expResult, result);
+//        fail("The test case is a prototype.");
+//    }
+//
+//    @Test
+//    public void testRemoveOne() throws UserNotFoundException, IdNotFoundException {
+//        System.out.println("removeOne");
+//        Long id = 1L;
+//        UserService instance = new UserService(userRepository, modelMapper);
+//        UserDto expResult = new UserDto(1L, "juanesr9898", "123456", "Juanes", "juanes.9898@hotmail.com"); ;
+//        UserDto result = instance.removeOne(id);
+//        assertEquals(expResult, result);
+//        fail("The test case is a prototype.");
+//    }   
 }
